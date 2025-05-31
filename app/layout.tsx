@@ -6,6 +6,7 @@ import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://developer-tools-suite.netlify.app'),
   title: 'Free Online Developer Tools | URL Encoder Decoder, Base64, JWT, JSON Formatter',
   description: 'Free online developer tools including URL encoder/decoder, Base64 encoder/decoder, JWT decoder, JSON formatter, hash generator, UUID generator, QR code generator, and text utilities. No registration required.',
   keywords: 'URL encoder, URL decoder, Base64 encoder, Base64 decoder, JWT decoder, JSON formatter, hash generator, MD5, SHA256, UUID generator, QR code generator, text case converter, whitespace cleaner, developer tools, online tools, encoding tools, decoding tools, web development tools, programming utilities',

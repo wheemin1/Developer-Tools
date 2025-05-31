@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://developer-tools-suite.netlify.app/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1

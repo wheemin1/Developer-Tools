@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     images: ['/og-image.png'],
   },
   verification: {
-    google: 'your-google-verification-code',
+    google: 'CXwW2ROvezFAamVFZYXX26sxDGQ9YjNOHBPFGM7LA6U',
   },
   alternates: {
     canonical: 'https://developer-tools-suite.netlify.app',

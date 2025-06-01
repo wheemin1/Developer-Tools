@@ -9,11 +9,12 @@ export default function Home() {
       {/* SEO Content Header */}
       <section className="mb-8 text-center">
         <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-          Free Online Developer Tools
+          Free Developer Tools Suite - URL Encoder, Base64, JWT & More
         </h1>
         <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-6">
-          Complete suite of encoding, decoding, formatting, and utility tools for developers. 
-          All tools work offline in your browser with no registration required.
+          Professional-grade online developer tools for encoding, decoding, formatting, and data conversion. 
+          9 essential utilities including URL encoder/decoder, Base64 converter, JWT token decoder, JSON formatter, 
+          hash generators, UUID generator, and QR code creator. All tools work instantly in your browser with no signup required.
         </p>
         <div className="flex flex-wrap justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
           <span className="bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">URL Encoder/Decoder</span>
@@ -65,6 +66,41 @@ export default function Home() {
               <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
                 All tools are client-side only - your data never leaves your browser. Free to use with no registration required.
               </p>
+            </section>
+
+            {/* Additional SEO Content */}
+            <section className="mt-8 text-sm text-gray-600 dark:text-gray-300 max-w-4xl mx-auto">
+              <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+                Why Choose Our Developer Tools Suite?
+              </h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="font-medium mb-2 text-gray-800 dark:text-gray-200">🔒 Privacy & Security</h3>
+                  <p>All processing happens locally in your browser. No data is sent to servers, ensuring complete privacy and security for sensitive information.</p>
+                </div>
+                <div>
+                  <h3 className="font-medium mb-2 text-gray-800 dark:text-gray-200">⚡ Instant Results</h3>
+                  <p>Real-time processing with live preview. See results as you type without delays or waiting for server responses.</p>
+                </div>
+                <div>
+                  <h3 className="font-medium mb-2 text-gray-800 dark:text-gray-200">📱 Cross-Platform</h3>
+                  <p>Works on desktop, tablet, and mobile devices. Responsive design adapts to any screen size for optimal usability.</p>
+                </div>
+                <div>
+                  <h3 className="font-medium mb-2 text-gray-800 dark:text-gray-200">🆓 Completely Free</h3>
+                  <p>No registration, no subscriptions, no hidden fees. Professional-grade tools available to everyone without restrictions.</p>
+                </div>
+              </div>
+              
+              <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <h3 className="font-medium mb-2 text-gray-800 dark:text-gray-200">Popular Use Cases:</h3>
+                <p className="text-xs leading-relaxed">
+                  Web developers use our URL encoder for handling special characters in URLs and query parameters. 
+                  API developers rely on our Base64 encoder for data transmission and JWT decoder for token analysis. 
+                  Frontend developers use our JSON formatter for debugging API responses and QR code generator for mobile app integration. 
+                  Security professionals utilize our hash generators for data integrity verification and UUID generator for unique identifier creation.
+                </p>
+              </div>
             </section>
           </div>
 

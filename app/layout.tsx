@@ -7,33 +7,33 @@ import { Footer } from '@/components/footer'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://developer-tools-suite.netlify.app'),
-  title: 'Free Online Developer Tools | URL Encoder Decoder, Base64, JWT, JSON Formatter',
-  description: 'Free online developer tools including URL encoder/decoder, Base64 encoder/decoder, JWT decoder, JSON formatter, hash generator, UUID generator, QR code generator, and text utilities. No registration required.',
-  keywords: 'URL encoder, URL decoder, Base64 encoder, Base64 decoder, JWT decoder, JSON formatter, hash generator, MD5, SHA256, UUID generator, QR code generator, text case converter, whitespace cleaner, developer tools, online tools, encoding tools, decoding tools, web development tools, programming utilities',
-  authors: [{ name: 'Developer Tools' }],
+  title: 'Free Developer Tools Suite | URL Encoder, Base64, JWT Decoder & 9 Essential Online Tools',
+  description: 'Free online developer tools including URL encoder/decoder, Base64 encoder/decoder, JWT token decoder, JSON formatter, hash generator, UUID generator, QR code generator & more. No registration required - instant access to essential coding utilities.',
+  keywords: 'URL encoder, URL decoder, Base64 encoder, Base64 decoder, JWT decoder, JSON formatter, hash generator, MD5, SHA256, SHA1, UUID generator, QR code generator, text converter, case converter, whitespace cleaner, developer tools, online tools, encoding tools, decoding tools, web development tools, programming utilities, coding tools, free online tools, developer utilities, web developer tools',
+  authors: [{ name: 'Developer Tools Suite' }],
   creator: 'Developer Tools Suite',
-  publisher: 'Developer Tools',
+  publisher: 'Developer Tools Suite',
   robots: 'index, follow',
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://developer-tools-suite.netlify.app',
-    title: 'Free Online Developer Tools | URL Encoder Decoder, Base64, JWT, JSON Formatter',
-    description: 'Free online developer tools including URL encoder/decoder, Base64 encoder/decoder, JWT decoder, JSON formatter, hash generator, UUID generator, QR code generator, and text utilities. No registration required.',
+    title: 'Free Developer Tools Suite | URL Encoder, Base64, JWT Decoder & Essential Online Tools',
+    description: 'Free online developer tools including URL encoder/decoder, Base64 encoder/decoder, JWT decoder, JSON formatter, hash generator, UUID generator, QR code generator & text utilities. No registration required - instant access to 9 essential coding tools.',
     siteName: 'Developer Tools Suite',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Developer Tools Suite - Free Online Encoding & Decoding Tools',
+        alt: 'Developer Tools Suite - Free Online Encoding, Decoding & Development Utilities',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Free Online Developer Tools | URL Encoder Decoder, Base64, JWT, JSON Formatter',
-    description: 'Free online developer tools including URL encoder/decoder, Base64 encoder/decoder, JWT decoder, JSON formatter, and more. No registration required.',
+    title: 'Free Developer Tools Suite | URL Encoder, Base64, JWT Decoder & Essential Online Tools',
+    description: 'Free online developer tools: URL encoder/decoder, Base64 encoder/decoder, JWT decoder, JSON formatter, hash generator, UUID generator, QR code generator & more. No signup required!',
     images: ['/og-image.png'],
   },
   verification: {
@@ -66,7 +66,7 @@ export default function RootLayout({
               "@type": "WebApplication",
               "name": "Developer Tools Suite",
               "url": "https://developer-tools-suite.netlify.app",
-              "description": "Free online developer tools including URL encoder/decoder, Base64 encoder/decoder, JWT decoder, JSON formatter, hash generator, UUID generator, QR code generator, and text utilities.",
+              "description": "Free online developer tools including URL encoder/decoder, Base64 encoder/decoder, JWT decoder, JSON formatter, hash generator, UUID generator, QR code generator, text case converter, and whitespace cleaner. Essential utilities for web developers and programmers.",
               "applicationCategory": "DeveloperApplication",
               "operatingSystem": "Any",
               "offers": {

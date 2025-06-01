@@ -1,8 +1,14 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /out/
 
 # Sitemap
 Sitemap: https://developer-tools-suite.netlify.app/sitemap.xml
 
-# Crawl-delay
+# Crawl-delay (be nice to search engines)
 Crawl-delay: 1
+
+# Host
+Host: https://developer-tools-suite.netlify.app

@@ -4,7 +4,7 @@
 
 [build.environment]
   NODE_VERSION = "18"
-  NPM_FLAGS = "--prefix=/dev/null"
+  NPM_CONFIG_PRODUCTION = "false"
 
 [[headers]]
   for = "/*"

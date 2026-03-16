@@ -316,6 +316,14 @@ export function HashGenerator() {
     handleFileHash(file);
   }, [handleFileHash])
 
+  const handleClear = () => {
+    setInput("")
+  }
+
+  const loadSampleText = () => {
+    setInput("The quick brown fox jumps over the lazy dog")
+  }
+
   return (
     <div className="space-y-6">
       {/* Controls */}

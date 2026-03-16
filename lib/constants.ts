@@ -16,9 +16,9 @@ export const TOOL_CATEGORIES = [
       },
       {
         id: "jwt",
-        name: "JWT Decoder",
+        name: "JWT Encoder & Decoder",
         shortName: "JWT",
-        description: "Decode and validate JSON Web Tokens",
+        description: "Decode, verify, and sign JSON Web Tokens",
       },
     ],
   },
@@ -66,9 +66,18 @@ export const TOOL_CATEGORIES = [
         shortName: "QR Code",
         description: "Generate scannable QR codes from text or URLs",
       },
+      {
+        id: "jwt-secret",
+        name: "JWT Secret Key Generator",
+        shortName: "JWT Key",
+        description: "Generate Base64 secrets for HS256/384/512",
+      },
     ],
   },
 ] as const
+
+export type ToolCategory = (typeof TOOL_CATEGORIES)[number]
+export type Tool = ToolCategory["tools"][number]
 
 export const DEBOUNCE_DELAY = 300
 export const COPY_FEEDBACK_DURATION = 2000

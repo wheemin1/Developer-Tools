@@ -1,9 +1,22 @@
-import type { Metadata } from 'next'
-import './globals.css'
-import { ThemeProvider } from '@/components/theme-provider'
-import { Toaster } from '@/components/ui/toaster'
-import { Header } from '@/components/header'
-import { Footer } from '@/components/footer'
+import type { Metadata } from "next"
+import "./globals.css"
+import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/toaster"
+import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
+import { Space_Grotesk, Manrope } from "next/font/google"
+
+const displayFont = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["400", "500", "600", "700"],
+})
+
+const bodyFont = Manrope({
+  subsets: ["latin"],
+  variable: "--font-body",
+  weight: ["400", "500", "600", "700"],
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://developer-tools-suite.netlify.app'),
@@ -51,7 +64,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${displayFont.variable} ${bodyFont.variable}`}
+    >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#000000" />
@@ -93,11 +110,11 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body>
+      <body className="min-h-screen bg-background text-foreground antialiased">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <div className="min-h-screen flex flex-col">
             <Header />
-            <main className="flex-1 container mx-auto px-4 py-8">
+            <main className="flex-1 w-full">
               {children}
             </main>
             <Footer />

@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { Moon, Sun, Code } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
@@ -10,15 +11,17 @@ export function Header() {
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
+        <Link href="/" className="flex items-center space-x-3 group">
           <div className="p-2 bg-primary/10 rounded-lg">
             <Code className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight">Developer Tools</h1>
+            <h1 className="text-xl md:text-2xl font-semibold tracking-tight group-hover:text-foreground">
+              Developer Tools
+            </h1>
             <p className="text-xs text-muted-foreground hidden sm:block">Professional utility suite</p>
           </div>
-        </div>
+        </Link>
 
         <Button
           variant="ghost"

@@ -1,60 +1,91 @@
-import { EncodingToolsApp } from "@/components/encoding-tools-app"
-import { TopBannerAd } from "@/components/ads/top-banner-ad"
-import { SkyscraperAd } from "@/components/ads/skyscraper-ad"
-import { MobileBannerAd } from "@/components/ads/mobile-banner-ad"
+import Link from "next/link"
+import { ToolsGrid } from "@/components/tools-grid"
+
+export const metadata = {
+  title: "Free Developer Tools Suite - URL Encoder, Base64, JWT & More",
+  description:
+    "Professional-grade online developer tools. 9 essential utilities including URL encoder, Base64 converter, JWT decoder, JSON formatter, and hash generators.",
+}
 
 export default function Home() {
   return (
-    <>
-      {/* SEO Content Header */}
-      <section className="mb-8 text-center">
-        <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100">
-          Free Developer Tools Suite - URL Encoder, Base64, JWT & More
-        </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-6">
-          Professional-grade online developer tools for encoding, decoding, formatting, and data conversion. 
-          9 essential utilities including URL encoder/decoder, Base64 converter, JWT token decoder, JSON formatter, 
-          hash generators, UUID generator, and QR code creator. All tools work instantly in your browser with no signup required.
-        </p>
-        <div className="flex flex-wrap justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-          <span className="bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">URL Encoder/Decoder</span>
-          <span className="bg-green-100 dark:bg-green-900 px-2 py-1 rounded">Base64 Encoder/Decoder</span>
-          <span className="bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded">JWT Decoder</span>
-          <span className="bg-yellow-100 dark:bg-yellow-900 px-2 py-1 rounded">JSON Formatter</span>
-          <span className="bg-red-100 dark:bg-red-900 px-2 py-1 rounded">Hash Generator</span>
-          <span className="bg-indigo-100 dark:bg-indigo-900 px-2 py-1 rounded">UUID Generator</span>
-          <span className="bg-pink-100 dark:bg-pink-900 px-2 py-1 rounded">QR Code Generator</span>
-        </div>
-      </section>
+    <div className="w-full">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10 bg-grid-soft opacity-30" />
 
-      {/* Top Banner Ad */}
-      <TopBannerAd />
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-16 pb-10">
+          <div className="flex flex-col gap-10">
+            <section className="grid gap-4">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground">
+                Free offline developer tools
+              </h1>
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl">
+                Fast, private, and in-browser utilities for encoding, formatting, and generating.
+              </p>
+              <div>
+                <Link
+                  href="#tools"
+                  className="inline-flex items-center rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+                >
+                  Browse tools
+                </Link>
+              </div>
+            </section>
 
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Main Content */}
-          <div className="flex-1">
-            <EncodingToolsApp />
-
-            {/* Mobile Banner Ad - Shows between components on mobile */}
-            <div className="lg:hidden mt-6">
-              <MobileBannerAd />
+            <div className="rounded-3xl border border-border/70 bg-card/70 p-6">
+              <div className="text-sm text-muted-foreground">
+                Privacy-first, in-browser tools. No uploads. No tracking. Just fast utilities.
+              </div>
             </div>
-            
-            {/* SEO Content Footer */}
-            <section className="mt-12 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <h2 className="text-2xl font-semibold mb-4">About Developer Tools Suite</h2>
-              <div className="grid md:grid-cols-2 gap-6 text-sm text-gray-600 dark:text-gray-300">
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="flex flex-col gap-10">
+          <div className="min-w-0" id="tools">
+            <ToolsGrid />
+
+            <section className="mt-10 rounded-2xl border border-border/60 bg-card/60 p-6">
+              <h2 className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Popular searches</h2>
+              <div className="mt-4 flex flex-wrap gap-3 text-sm">
+                <Link className="text-foreground hover:text-muted-foreground" href="/tools/jwt-encoder">
+                  JWT Encoder
+                </Link>
+                <Link className="text-foreground hover:text-muted-foreground" href="/tools/jwt-encoder-online">
+                  JWT Encoder Online
+                </Link>
+                <Link className="text-foreground hover:text-muted-foreground" href="/tools/jwt-token-encoder">
+                  JWT Token Encoder
+                </Link>
+                <Link className="text-foreground hover:text-muted-foreground" href="/tools/encode-jwt-online">
+                  Encode JWT Online
+                </Link>
+                <Link className="text-foreground hover:text-muted-foreground" href="/tools/jwt-secret-key-generator-base64">
+                  JWT Secret Key Generator (Base64)
+                </Link>
+                <Link className="text-foreground hover:text-muted-foreground" href="/tools/jwt-secret-key-generator">
+                  JWT Secret Key Generator
+                </Link>
+                <Link className="text-foreground hover:text-muted-foreground" href="/tools/base64-qr-code-generator">
+                  Base64 QR Code Generator
+                </Link>
+              </div>
+            </section>
+
+            <section className="mt-12 p-8 bg-muted/30 rounded-2xl">
+              <h2 className="text-lg font-semibold mb-4">About the tools</h2>
+              <div className="grid md:grid-cols-2 gap-6 text-sm text-muted-foreground">
                 <div>
-                  <h3 className="font-medium mb-2">Encoding & Decoding Tools</h3>
+                  <h3 className="font-medium mb-2 text-foreground">Encoding & Decoding</h3>
                   <ul className="space-y-1">
                     <li>• URL Encoder/Decoder - Convert special characters for web URLs</li>
                     <li>• Base64 Encoder/Decoder - Encode/decode text and files to Base64</li>
-                    <li>• JWT Token Decoder - Decode JSON Web Tokens and view claims</li>
+                    <li>• JWT Token Encoder/Decoder - Encode/decode JSON Web Tokens and view claims</li>
                   </ul>
                 </div>
                 <div>
-                  <h3 className="font-medium mb-2">Formatting & Generation Tools</h3>
+                  <h3 className="font-medium mb-2 text-foreground">Formatting & Generation</h3>
                   <ul className="space-y-1">
                     <li>• JSON Formatter - Format, validate and beautify JSON data</li>
                     <li>• Hash Generator - Generate MD5, SHA256 hashes from text/files</li>
@@ -63,53 +94,14 @@ export default function Home() {
                   </ul>
                 </div>
               </div>
-              <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+              <p className="mt-4 text-xs">
                 All tools are client-side only - your data never leaves your browser. Free to use with no registration required.
               </p>
             </section>
-
-            {/* Additional SEO Content */}
-            <section className="mt-8 text-sm text-gray-600 dark:text-gray-300 max-w-4xl mx-auto">
-              <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
-                Why Choose Our Developer Tools Suite?
-              </h2>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="font-medium mb-2 text-gray-800 dark:text-gray-200">🔒 Privacy & Security</h3>
-                  <p>All processing happens locally in your browser. No data is sent to servers, ensuring complete privacy and security for sensitive information.</p>
-                </div>
-                <div>
-                  <h3 className="font-medium mb-2 text-gray-800 dark:text-gray-200">⚡ Instant Results</h3>
-                  <p>Real-time processing with live preview. See results as you type without delays or waiting for server responses.</p>
-                </div>
-                <div>
-                  <h3 className="font-medium mb-2 text-gray-800 dark:text-gray-200">📱 Cross-Platform</h3>
-                  <p>Works on desktop, tablet, and mobile devices. Responsive design adapts to any screen size for optimal usability.</p>
-                </div>
-                <div>
-                  <h3 className="font-medium mb-2 text-gray-800 dark:text-gray-200">🆓 Completely Free</h3>
-                  <p>No registration, no subscriptions, no hidden fees. Professional-grade tools available to everyone without restrictions.</p>
-                </div>
-              </div>
-              
-              <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <h3 className="font-medium mb-2 text-gray-800 dark:text-gray-200">Popular Use Cases:</h3>
-                <p className="text-xs leading-relaxed">
-                  Web developers use our URL encoder for handling special characters in URLs and query parameters. 
-                  API developers rely on our Base64 encoder for data transmission and JWT decoder for token analysis. 
-                  Frontend developers use our JSON formatter for debugging API responses and QR code generator for mobile app integration. 
-                  Security professionals utilize our hash generators for data integrity verification and UUID generator for unique identifier creation.
-                </p>
-              </div>
-            </section>
           </div>
 
-          {/* Skyscraper Ad - Desktop only */}
-          <div className="hidden lg:block">
-            <SkyscraperAd />
-          </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }

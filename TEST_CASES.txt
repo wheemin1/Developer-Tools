@@ -1,0 +1,180 @@
+Developer Tools Suite - Manual Test Cases
+
+1) URL Encoder / Decoder
+
+Test 1.1 - Encode URL
+Input:
+  https://example.com/search?q=hello world&lang=ko
+Action:
+  Encode
+Expected:
+  https%3A%2F%2Fexample.com%2Fsearch%3Fq%3Dhello%20world%26lang%3Dko
+
+Test 1.2 - Decode URL
+Input:
+  https%3A%2F%2Fexample.com%2Fsearch%3Fq%3Dhello%20world%26lang%3Dko
+Action:
+  Decode
+Expected:
+  https://example.com/search?q=hello world&lang=ko
+
+
+2) Base64 Encoder / Decoder
+
+Test 2.1 - Encode Text
+Input:
+  Hello, World!
+Action:
+  Encode
+Expected:
+  SGVsbG8sIFdvcmxkIQ==
+
+Test 2.2 - Decode Text
+Input:
+  SGVsbG8sIFdvcmxkIQ==
+Action:
+  Decode
+Expected:
+  Hello, World!
+
+
+3) JWT Encoder & Decoder
+
+Test 3.1 - Decode Token
+Input Token:
+  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+Expected Header:
+  {
+    "alg": "HS256",
+    "typ": "JWT"
+  }
+Expected Payload:
+  {
+    "sub": "1234567890",
+    "name": "John Doe",
+    "iat": 1516239022
+  }
+
+Test 3.2 - Verify Token (HS256)
+Secret:
+  your-256-bit-secret
+Expected:
+  Signature Verified
+
+Test 3.3 - Encode Token (HS256)
+Header JSON:
+  {
+    "alg": "HS256",
+    "typ": "JWT"
+  }
+Payload JSON:
+  {
+    "sub": "1234567890",
+    "name": "John Doe",
+    "iat": 1516239022
+  }
+Secret:
+  your-256-bit-secret
+Expected Token:
+  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+
+4) JSON Formatter
+
+Test 4.1 - Format JSON (default)
+Input:
+  {
+    // comment should be removed
+    "b": 1,
+    "a": 2
+  }
+Action:
+  Format
+Expected:
+  {
+    "b": 1,
+    "a": 2
+  }
+
+Test 4.2 - Minify JSON
+Input:
+  {
+    "b": 1,
+    "a": 2
+  }
+Action:
+  Minify
+Expected:
+  {"b":1,"a":2}
+
+
+5) Case Converter
+
+Input:
+  hello world example
+Expected:
+  camelCase: helloWorldExample
+  PascalCase: HelloWorldExample
+  snake_case: hello_world_example
+  kebab-case: hello-world-example
+  UPPER_CASE: HELLO_WORLD_EXAMPLE
+  lowercase: hello world example
+  UPPERCASE: HELLO WORLD EXAMPLE
+  Title Case: Hello World Example
+  Sentence case: Hello world example
+
+
+6) Whitespace Cleaner
+
+Test 6.1 - Default Options (remove extra spaces + tabs)
+Input:
+  Hello    world\tthis   is\t\tclean
+Expected:
+  Hello world this is clean
+
+Test 6.2 - Trim Only
+Input:
+   "  hi \n  there  "
+Preset:
+  Trim Only
+Expected:
+  "hi \n  there"
+
+Test 6.3 - Remove All Whitespace
+Input:
+  " A  B\nC\tD "
+Preset:
+  Compact (No Spaces)
+Expected:
+  ABCD
+
+
+7) Hash Generator
+
+Input:
+  The quick brown fox jumps over the lazy dog
+Expected:
+  MD5:    9e107d9d372bb6826bd81d3542a419d6
+  SHA-1:  2fd4e1c67a2d28fced849ee1bb76e7391b93eb12
+  SHA-256:d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592
+  SHA-384:ca737f1014a48f4c0b6dd43cb177b0afd9e5169367544c494011e3317dbf9a509cb1e5dc1e85a941bbee3d7f2afbc9b1
+  SHA-512:07e547d9586f6a73f73fbac0435ed76951218fb7d0c8d788a309d785436bbb642e93a252a954f23912547d1e8a3b5ed6e1bfd7097821233fa0538f3db854fee6
+
+
+8) UUID Generator
+
+Expected:
+  - Output length is 36 characters
+  - Matches regex: ^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+
+
+9) QR Code Generator
+
+Test 9.1 - Default QR
+Input:
+  https://example.com/docs
+Expected:
+  - QR renders in preview
+  - Size: 256x256
+  - Error correction: M
+  - Download button saves qr-code.png

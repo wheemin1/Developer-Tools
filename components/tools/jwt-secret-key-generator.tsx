@@ -16,20 +16,32 @@ const SECRET_SIZES = [
 export function JWTSecretKeyGenerator() {
   const [size, setSize] = useState("32")
   const [secret, setSecret] = useState("")
+  const [copyState, setCopyState] = useState<"idle" | "success" | "error">("idle")
+
+  const bytesToBase64 = (bytes: Uint8Array) => {
+    let binary = ""
+    bytes.forEach((byte) => {
+      binary += String.fromCharCode(byte)
+    })
+    return btoa(binary)
+  }
 
   const generateSecret = () => {
     const bytes = new Uint8Array(Number(size))
     crypto.getRandomValues(bytes)
-    let binary = ""
-    bytes.forEach((b) => {
-      binary += String.fromCharCode(b)
-    })
-    setSecret(btoa(binary))
+    setSecret(bytesToBase64(bytes))
+    setCopyState("idle")
   }
 
-  const copySecret = () => {
+  const copySecret = async () => {
     if (!secret) return
-    navigator.clipboard.writeText(secret)
+    try {
+      await navigator.clipboard.writeText(secret)
+      setCopyState("success")
+      setTimeout(() => setCopyState("idle"), 2000)
+    } catch {
+      setCopyState("error")
+    }
   }
 
   return (
@@ -65,9 +77,14 @@ export function JWTSecretKeyGenerator() {
           </Button>
           <Button type="button" variant="outline" className="gap-2" onClick={copySecret} disabled={!secret}>
             <Copy className="h-4 w-4" />
-            Copy
+            {copyState === "success" ? "Copied!" : "Copy"}
           </Button>
         </div>
+        {copyState === "error" && (
+          <p className="text-xs text-rose-600 dark:text-rose-400">
+            Clipboard access failed. Use HTTPS and allow clipboard permissions.
+          </p>
+        )}
 
         <div className="space-y-2">
           <Label>Generated Base64 secret</Label>

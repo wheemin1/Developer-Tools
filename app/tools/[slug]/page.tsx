@@ -1,5 +1,4 @@
-import { TOOL_CATEGORIES } from "@/lib/constants"
-import type { Tool } from "@/lib/constants"
+import { ALL_TOOLS, TOOL_CATEGORIES } from "@/lib/constants"
 import { notFound } from "next/navigation"
 
 import { ToolRenderer } from "@/components/tool-renderer"
@@ -36,9 +35,13 @@ export function generateStaticParams() {
   return routes
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const allTools = TOOL_CATEGORIES.flatMap((c) => c.tools) as Tool[]
-  const tool = allTools.find((t) => t.id === params.slug)
+type ToolPageProps = {
+  params: Promise<{ slug: string }>
+}
+
+export async function generateMetadata({ params }: ToolPageProps) {
+  const { slug } = await params
+  const tool = ALL_TOOLS.find((item) => item.id === slug)
 
   if (!tool) {
     return {
@@ -60,9 +63,9 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   }
 }
 
-export default function ToolPage({ params }: { params: { slug: string } }) {
-  const allTools = TOOL_CATEGORIES.flatMap((c) => c.tools) as Tool[]
-  const tool = allTools.find((t) => t.id === params.slug)
+export default async function ToolPage({ params }: ToolPageProps) {
+  const { slug } = await params
+  const tool = ALL_TOOLS.find((item) => item.id === slug)
 
   if (!tool) {
     notFound()
@@ -70,7 +73,7 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
 
   return (
     <div className="flex flex-col w-full h-full">
-      <ToolRenderer slug={params.slug} />
+      <ToolRenderer slug={slug} />
     </div>
   )
 }

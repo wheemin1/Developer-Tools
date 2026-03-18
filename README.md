@@ -6,7 +6,7 @@ https://developertoolss.netlify.app/
 🚀 A comprehensive collection of free online developer tools for encoding, decoding, formatting, and text processing. All tools work offline in your browser with no registration required.
 
 ![Developer Tools Suite](https://img.shields.io/badge/Developer-Tools-blue)
-![Next.js](https://img.shields.io/badge/Next.js-14-black)
+![Next.js](https://img.shields.io/badge/Next.js-15-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC)
 

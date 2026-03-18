@@ -1,116 +1,89 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect, useCallback } from "react"
+import type { ChangeEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Copy, Check, Zap, Upload } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useDebounce } from "@/hooks/use-debounce"
+import SparkMD5 from "spark-md5"
+
+const ALGORITHMS = [
+  { name: "MD5", id: "md5" },
+  { name: "SHA-1", id: "sha1" },
+  { name: "SHA-256", id: "sha256" },
+  { name: "SHA-384", id: "sha384" },
+  { name: "SHA-512", id: "sha512" },
+] as const
 
 export function HashGenerator() {
   const [input, setInput] = useState("")
   const [hashes, setHashes] = useState<Record<string, string>>({})
   const [liveMode, setLiveMode] = useState(true)
   const [copiedHash, setCopiedHash] = useState<string>("")
-  const [dragActive, setDragActive] = useState(false)
-  const [fileMode, setFileMode] = useState(false)
-  const [fileName, setFileName] = useState("")
-  const [fileSize, setFileSize] = useState("")
-  const [hashingProgress, setHashingProgress] = useState(0)
-  const [isHashing, setIsHashing] = useState(false)
+  const [inputSource, setInputSource] = useState<"text" | "file">("text")
+  const [fileInfo, setFileInfo] = useState("")
   const { toast } = useToast()
 
   // Debounce input for live mode
   const debouncedInput = useDebounce(input, 300)
 
-  // Hash algorithms
-  const algorithms = [
-    { name: "MD5", id: "md5" },
-    { name: "SHA-1", id: "sha1" },
-    { name: "SHA-256", id: "sha256" },
-    { name: "SHA-384", id: "sha384" },
-    { name: "SHA-512", id: "sha512" },
-  ]
-
-  // Generate hash using Web Crypto API - stabilized
-  const generateHash = useCallback(async (text: string, algorithm: string) => {
-    if (!text) return ""
-
-    try {
-      const encoder = new TextEncoder()
-      const data = encoder.encode(text)
-
-      let hashBuffer: ArrayBuffer
-
-      switch (algorithm) {
-        case "sha1":
-          hashBuffer = await crypto.subtle.digest("SHA-1", data)
-          break
-        case "sha256":
-          hashBuffer = await crypto.subtle.digest("SHA-256", data)
-          break
-        case "sha384":
-          hashBuffer = await crypto.subtle.digest("SHA-384", data)
-          break
-        case "sha512":
-          hashBuffer = await crypto.subtle.digest("SHA-512", data)
-          break
-        case "md5":
-          // MD5 is not supported by Web Crypto API, so we'll use a simple implementation
-          return await generateMD5(text)
-        default:
-          return ""
-      }
-
-      const hashArray = Array.from(new Uint8Array(hashBuffer))
-      return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
-    } catch (error) {
-      console.error(`Error generating ${algorithm} hash:`, error)
-      return ""
-    }
+  const bytesToArrayBuffer = useCallback((bytes: Uint8Array): ArrayBuffer => {
+    return Uint8Array.from(bytes).buffer
   }, [])
 
-  // Simple MD5 implementation (for demonstration - in production, use a proper library)
-  const generateMD5 = useCallback(async (text: string): Promise<string> => {
-    // Convert string to ArrayBuffer
-    const encoder = new TextEncoder();
-    const data = encoder.encode(text);
-    
-    // Use subtle crypto to generate SHA-256 hash
-    // Since MD5 is not directly supported by Web Crypto API, we'll create a more realistic
-    // implementation than the previous simplified one
-    try {
-      // This is not a real MD5, but at least it's a real hash function
-      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      // Take first 16 bytes to simulate MD5 length
-      return hashArray.slice(0, 16).map(b => b.toString(16).padStart(2, '0')).join('');
-    } catch (e) {
-      // Fallback implementation if the above fails
-      let hash = 0;
-      for (let i = 0; i < data.length; i++) {
-        hash = (hash << 5) - hash + data[i];
-        hash = hash & hash; // Convert to 32-bit integer
-      }
-      return Math.abs(hash).toString(16).padStart(8, "0").repeat(2).substring(0, 32);
-    }
-  }, [])
+  // Generate hash using real MD5 (SparkMD5) and Web Crypto algorithms.
+  const generateHash = useCallback(
+    async (bytes: Uint8Array, algorithm: string) => {
+      if (bytes.length === 0) return ""
 
-  // Generate all hashes - stabilized
-  const generateAllHashes = useCallback(
-    async (text: string) => {
-      if (!text) {
+      try {
+        if (algorithm === "md5") {
+          return SparkMD5.ArrayBuffer.hash(bytesToArrayBuffer(bytes))
+        }
+
+        let hashBuffer: ArrayBuffer
+
+        switch (algorithm) {
+          case "sha1":
+            hashBuffer = await crypto.subtle.digest("SHA-1", bytes)
+            break
+          case "sha256":
+            hashBuffer = await crypto.subtle.digest("SHA-256", bytes)
+            break
+          case "sha384":
+            hashBuffer = await crypto.subtle.digest("SHA-384", bytes)
+            break
+          case "sha512":
+            hashBuffer = await crypto.subtle.digest("SHA-512", bytes)
+            break
+          default:
+            return ""
+        }
+
+        const hashArray = Array.from(new Uint8Array(hashBuffer))
+        return hashArray.map((byte) => byte.toString(16).padStart(2, "0")).join("")
+      } catch (error) {
+        console.error(`Error generating ${algorithm} hash:`, error)
+        return ""
+      }
+    },
+    [bytesToArrayBuffer],
+  )
+
+  const generateAllHashesFromBytes = useCallback(
+    async (bytes: Uint8Array) => {
+      if (bytes.length === 0) {
         setHashes({})
         return
       }
 
       const newHashes: Record<string, string> = {}
 
-      for (const algorithm of algorithms) {
-        newHashes[algorithm.id] = await generateHash(text, algorithm.id)
+      for (const algorithm of ALGORITHMS) {
+        newHashes[algorithm.id] = await generateHash(bytes, algorithm.id)
       }
 
       setHashes(newHashes)
@@ -118,19 +91,38 @@ export function HashGenerator() {
     [generateHash],
   )
 
+  // Generate all hashes for text input.
+  const generateAllHashes = useCallback(
+    async (text: string) => {
+      if (!text) {
+        setHashes({})
+        return
+      }
+
+      const textBytes = new TextEncoder().encode(text)
+      await generateAllHashesFromBytes(textBytes)
+    },
+    [generateAllHashesFromBytes],
+  )
+
   // Handle live mode processing - fixed dependencies
   useEffect(() => {
+    if (inputSource !== "text") {
+      return
+    }
+
     if (liveMode) {
       generateAllHashes(debouncedInput)
     } else if (!debouncedInput) {
       setHashes({})
     }
-  }, [debouncedInput, liveMode, generateAllHashes])
+  }, [debouncedInput, inputSource, liveMode, generateAllHashes])
 
   // Manual processing
   const handleManualProcess = useCallback(() => {
+    if (inputSource !== "text") return
     generateAllHashes(input)
-  }, [input, generateAllHashes])
+  }, [generateAllHashes, input, inputSource])
 
   const handleCopy = useCallback(
     async (hash: string, algorithm: string) => {
@@ -145,7 +137,7 @@ export function HashGenerator() {
         setTimeout(() => {
           setCopiedHash("")
         }, 2000)
-      } catch (error) {
+      } catch {
         toast({
           title: "Copy Failed",
           description: "Failed to copy hash to clipboard.",
@@ -156,171 +148,54 @@ export function HashGenerator() {
     [toast],
   )
 
-  // Handle file hash generation with chunks to prevent UI freezing
-  const handleFileHash = useCallback(async (file: File) => {
-    if (!file) return;
-    
-    setFileName(file.name);
-    setFileSize(formatFileSize(file.size));
-    setFileMode(true);
-    setIsHashing(true);
-    setHashingProgress(0);
-    
-    const chunkSize = 2097152; // 2MB chunks
-    const chunks = Math.ceil(file.size / chunkSize);
-    const hashContexts: Record<string, any> = {};
-    
-    // Initialize hash contexts for each algorithm
-    for (const algorithm of algorithms) {
-      if (algorithm.id !== 'md5') { // We'll handle MD5 differently
-        try {
-          hashContexts[algorithm.id] = await crypto.subtle.digest(algorithm.id.toUpperCase(), new Uint8Array());
-        } catch (e) {
-          // Fallback if the algorithm is not supported
-          hashContexts[algorithm.id] = null;
-        }
+  const formatFileSize = useCallback((bytes: number): string => {
+    if (bytes < 1024) return `${bytes} B`
+    if (bytes < 1024 ** 2) return `${(bytes / 1024).toFixed(2)} KB`
+    if (bytes < 1024 ** 3) return `${(bytes / 1024 ** 2).toFixed(2)} MB`
+    return `${(bytes / 1024 ** 3).toFixed(2)} GB`
+  }, [])
+
+  // File upload handler (binary-safe hashing)
+  const handleFileUpload = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0]
+      if (!file) return
+
+      const reader = new FileReader()
+      reader.onload = async (loadEvent) => {
+        if (!(loadEvent.target?.result instanceof ArrayBuffer)) return
+
+        setInputSource("file")
+        setFileInfo(`${file.name} (${formatFileSize(file.size)})`)
+        await generateAllHashesFromBytes(new Uint8Array(loadEvent.target.result))
+
+        toast({
+          title: "File hashed",
+          description: `Computed hashes for ${file.name}.`,
+        })
       }
-    }
-    
-    const fileReader = new FileReader();
-    let currentChunk = 0;
-    
-    const readNextChunk = () => {
-      const start = currentChunk * chunkSize;
-      const end = Math.min(file.size, start + chunkSize);
-      const slice = file.slice(start, end);
-      fileReader.readAsArrayBuffer(slice);
-    };
-    
-    fileReader.onload = async (e) => {
-      if (!e.target?.result) return;
-      
-      const chunk = e.target.result as ArrayBuffer;
-      const uint8Array = new Uint8Array(chunk);
-      
-      // Update progress
-      currentChunk++;
-      const progress = Math.min(99, Math.round((currentChunk / chunks) * 100));
-      setHashingProgress(progress);
-      
-      // Process this chunk for each algorithm
-      for (const algorithm of algorithms) {
-        try {
-          if (algorithm.id === 'md5') {
-            // We don't have proper support for streaming MD5 in the browser, 
-            // so we'll handle this separately and less efficiently
-            continue;
-          }
-          
-          // For other algorithms, use Web Crypto API
-          const hashBuffer = await crypto.subtle.digest(algorithm.id.toUpperCase(), uint8Array);
-          const hashArray = Array.from(new Uint8Array(hashBuffer));
-          const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-          
-          // Store hash for this chunk
-          if (!hashContexts[algorithm.id]) {
-            hashContexts[algorithm.id] = hashHex;
-          } else {
-            // Combine with previous hash - simple concatenation for demo
-            const combined = hashContexts[algorithm.id] + hashHex;
-            const combinedBuffer = new TextEncoder().encode(combined);
-            const newHashBuffer = await crypto.subtle.digest(algorithm.id.toUpperCase(), combinedBuffer);
-            const newHashArray = Array.from(new Uint8Array(newHashBuffer));
-            hashContexts[algorithm.id] = newHashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-          }
-        } catch (e) {
-          console.error(`Error processing ${algorithm.id} hash:`, e);
-        }
+      reader.onerror = () => {
+        toast({
+          title: "Error",
+          description: "Failed to read file for hashing.",
+          variant: "destructive",
+        })
       }
-      
-      // If there are more chunks, read the next one
-      if (currentChunk < chunks) {
-        readNextChunk();
-      } else {
-        // We're done - finalize and set the hashes
-        const newHashes: Record<string, string> = {};
-        
-        for (const algorithm of algorithms) {
-          if (algorithm.id === 'md5') {
-            // For MD5, we'll take a simpler approach
-            // In a real app, you'd use a proper streaming MD5 implementation
-            newHashes[algorithm.id] = 'MD5 for large files not supported in this demo';
-          } else {
-            newHashes[algorithm.id] = hashContexts[algorithm.id] || '';
-          }
-        }
-        
-        setHashes(newHashes);
-        setHashingProgress(100);
-        setIsHashing(false);
-        setInput(`File: ${file.name} (${formatFileSize(file.size)})`);
-      }
-    };
-    
-    fileReader.onerror = () => {
-      toast({
-        title: "Error",
-        description: "Failed to read file for hashing.",
-        variant: "destructive",
-      });
-      setIsHashing(false);
-    };
-    
-    // Start reading the first chunk
-    readNextChunk();
-  }, [algorithms, toast]);
-  
-  // Format file size for display
-  const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-  
-  // Handle drag events
-  const handleDragEnter = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(true);
-  }, []);
-  
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-  }, []);
-  
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  }, []);
-  
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    
-    const file = e.dataTransfer.files?.[0];
-    if (!file) return;
-    
-    handleFileHash(file);
-  }, [handleFileHash]);
-  
-  // Enhanced file upload handler
-  const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    
-    handleFileHash(file);
-  }, [handleFileHash])
+      reader.readAsArrayBuffer(file)
+    },
+    [formatFileSize, generateAllHashesFromBytes, toast],
+  )
 
   const handleClear = () => {
     setInput("")
+    setInputSource("text")
+    setFileInfo("")
+    setHashes({})
   }
 
   const loadSampleText = () => {
+    setInputSource("text")
+    setFileInfo("")
     setInput("The quick brown fox jumps over the lazy dog")
   }
 
@@ -345,12 +220,13 @@ export function HashGenerator() {
               </span>
             </Button>
           </label>
-          <input id="file-upload" type="file" onChange={handleFileUpload} className="hidden" accept="text/*" />
+          <input id="file-upload" type="file" onChange={handleFileUpload} className="hidden" />
           <Button variant="outline" size="sm" onClick={loadSampleText}>
             Sample
           </Button>
         </div>
       </div>
+      {fileInfo && <p className="text-sm text-muted-foreground">Loaded file: {fileInfo}</p>}
 
       {/* Input Section */}
       <div className="space-y-3">
@@ -362,7 +238,11 @@ export function HashGenerator() {
         </div>
         <Textarea
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => {
+            setInputSource("text")
+            setFileInfo("")
+            setInput(e.target.value)
+          }}
           placeholder="Enter text to generate hashes..."
           className="min-h-[150px] resize-none font-mono text-sm"
         />
@@ -377,7 +257,7 @@ export function HashGenerator() {
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Generated Hashes</h3>
         <div className="space-y-3">
-          {algorithms.map((algorithm) => (
+          {ALGORITHMS.map((algorithm) => (
             <div key={algorithm.id} className="p-4 border rounded-lg">
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-medium">{algorithm.name}</h4>

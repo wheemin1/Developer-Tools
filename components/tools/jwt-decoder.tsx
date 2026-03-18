@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { jwtVerify, SignJWT, decodeJwt, decodeProtectedHeader } from "jose"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
@@ -13,6 +13,8 @@ import { Copy, AlertCircle, ShieldCheck, ShieldAlert, Check } from "lucide-react
 
 export function JWTDecoder() {
   const [activeTab, setActiveTab] = useState("decode")
+    const verifyRequestIdRef = useRef(0)
+    const encodeRequestIdRef = useRef(0)
 
   // Decode State
   const [tokenInput, setTokenInput] = useState("")
@@ -21,7 +23,9 @@ export function JWTDecoder() {
   const [decodeSecret, setDecodeSecret] = useState("")
   const [verifyStatus, setVerifyStatus] = useState<"none" | "valid" | "invalid">("none")
   const [decodeError, setDecodeError] = useState("")
-  const [copied, setCopied] = useState(false)
+    const [copiedToken, setCopiedToken] = useState(false)
+    const [copiedSecret, setCopiedSecret] = useState(false)
+    const [copyError, setCopyError] = useState("")
 
   // Encode State
   const [selectedAlgo, setSelectedAlgo] = useState("HS256")
@@ -31,6 +35,14 @@ export function JWTDecoder() {
   const [generatedToken, setGeneratedToken] = useState("")
   const [encodeError, setEncodeError] = useState("")
     const [generatedSecret, setGeneratedSecret] = useState("")
+
+    const bytesToBase64 = (bytes: Uint8Array) => {
+        let binary = ""
+        bytes.forEach((byte) => {
+            binary += String.fromCharCode(byte)
+        })
+        return btoa(binary)
+    }
 
   // DECODE LOGIC
   useEffect(() => {
@@ -45,19 +57,20 @@ export function JWTDecoder() {
     try {
       const header = decodeProtectedHeader(tokenInput)
       const payload = decodeJwt(tokenInput)
-      
+
       setDecodedHeader(JSON.stringify(header, null, 2))
       setDecodedPayload(JSON.stringify(payload, null, 2))
       setDecodeError("")
+            setCopyError("")
 
       if (decodeSecret.trim() && header.alg && header.alg.startsWith("HS")) {
         verifyToken(tokenInput, decodeSecret)
       } else if (decodeSecret.trim()) {
-         setVerifyStatus("invalid")
+                setVerifyStatus("invalid")
       } else {
         setVerifyStatus("none")
       }
-    } catch (err: any) {
+        } catch {
       setDecodeError("Invalid JWT Format")
       setDecodedHeader("")
       setDecodedPayload("")
@@ -66,17 +79,22 @@ export function JWTDecoder() {
   }, [tokenInput, decodeSecret])
 
   const verifyToken = async (token: string, secret: string) => {
+        const requestId = ++verifyRequestIdRef.current
     try {
       const secretKey = new TextEncoder().encode(secret)
       await jwtVerify(token, secretKey)
+            if (requestId !== verifyRequestIdRef.current) return
       setVerifyStatus("valid")
-    } catch (err) {
+        } catch {
+            if (requestId !== verifyRequestIdRef.current) return
       setVerifyStatus("invalid")
     }
   }
 
   // ENCODE LOGIC
   useEffect(() => {
+        const requestId = ++encodeRequestIdRef.current
+
     const generateToken = async () => {
       try {
         if (!encodeHeader.trim() || !encodePayload.trim()) return
@@ -85,22 +103,23 @@ export function JWTDecoder() {
         const pPayload = JSON.parse(encodePayload)
 
         if (!pHeader.alg || !pHeader.alg.startsWith("HS")) {
-            setEncodeError("Algorithm not supported for symmetric signing. Use HS256, HS384, or HS512.")
-            setGeneratedToken("")
-            return
+                    if (requestId !== encodeRequestIdRef.current) return
+                    setEncodeError("Algorithm not supported for symmetric signing. Use HS256, HS384, or HS512.")
+                    setGeneratedToken("")
+                    return
         }
 
-         const secretKey = new TextEncoder().encode(encodeSecret)
-         
-         const jwt = await new SignJWT(pPayload)
-            .setProtectedHeader(pHeader)
-            .sign(secretKey)
-            
-         setGeneratedToken(jwt)
-         setEncodeError("")
+                const secretKey = new TextEncoder().encode(encodeSecret)
 
-      } catch (err: any) {
-        setEncodeError("Invalid JSON or Encoding Error: " + err.message)
+                const jwt = await new SignJWT(pPayload).setProtectedHeader(pHeader).sign(secretKey)
+
+                if (requestId !== encodeRequestIdRef.current) return
+                setGeneratedToken(jwt)
+                setEncodeError("")
+            } catch (err: unknown) {
+                if (requestId !== encodeRequestIdRef.current) return
+                const message = err instanceof Error ? err.message : "Unknown error"
+                setEncodeError("Invalid JSON or Encoding Error: " + message)
         setGeneratedToken("")
       }
     }
@@ -111,34 +130,50 @@ export function JWTDecoder() {
   const handleAlgoChange = (val: string) => {
     setSelectedAlgo(val)
     try {
-        const h = JSON.parse(encodeHeader)
-        h.alg = val
-        setEncodeHeader(JSON.stringify(h, null, 2))
-    } catch {}
+            const header = JSON.parse(encodeHeader)
+            header.alg = val
+            setEncodeHeader(JSON.stringify(header, null, 2))
+            setEncodeError("")
+        } catch {
+            setEncodeHeader(JSON.stringify({ alg: val, typ: "JWT" }, null, 2))
+            setEncodeError("Header JSON was reset to match selected algorithm.")
+        }
   }
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    const copyToClipboard = async (text: string, type: "token" | "secret") => {
+        if (!text) return
+
+        try {
+            await navigator.clipboard.writeText(text)
+            setCopyError("")
+
+            if (type === "token") {
+                setCopiedToken(true)
+                setTimeout(() => setCopiedToken(false), 2000)
+                return
+            }
+
+            setCopiedSecret(true)
+            setTimeout(() => setCopiedSecret(false), 2000)
+        } catch {
+            setCopyError("Clipboard access failed. Use a secure context (HTTPS) and allow permissions.")
+        }
   }
 
     const generateBase64Secret = () => {
         const bytes = new Uint8Array(32)
         crypto.getRandomValues(bytes)
-        let binary = ""
-        bytes.forEach((b) => {
-            binary += String.fromCharCode(b)
-        })
-        const secret = btoa(binary)
+        const secret = bytesToBase64(bytes)
         setGeneratedSecret(secret)
         setEncodeSecret(secret)
+        setCopyError("")
     }
 
   const loadSampleToken = () => {
-      const sample = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-      setTokenInput(sample)
-      setDecodeSecret("your-256-bit-secret")
+        const sample =
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        setTokenInput(sample)
+        setDecodeSecret("your-256-bit-secret")
   }
 
   return (
@@ -284,10 +319,10 @@ export function JWTDecoder() {
                                                         type="button"
                                                         variant="ghost"
                                                         size="sm"
-                                                        onClick={() => generatedSecret && copyToClipboard(generatedSecret)}
+                                                        onClick={() => copyToClipboard(generatedSecret, "secret")}
                                                         disabled={!generatedSecret}
                                                     >
-                                                        Copy
+                                                        {copiedSecret ? "Copied!" : "Copy"}
                                                     </Button>
                                                 </div>
                                                 <Textarea
@@ -308,13 +343,14 @@ export function JWTDecoder() {
                             variant="outline" 
                             size="sm" 
                             className="h-8 gap-2 bg-background hover:bg-muted"
-                            onClick={() => copyToClipboard(generatedToken)}
+                            onClick={() => copyToClipboard(generatedToken, "token")}
                             disabled={!generatedToken}
                         >
-                            {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                            {copied ? "Copied!" : "Copy Token"}
+                            {copiedToken ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                            {copiedToken ? "Copied!" : "Copy Token"}
                         </Button>
                     </div>
+                    {copyError && <p className="text-xs text-rose-600 dark:text-rose-400">{copyError}</p>}
                     {encodeError ? (
                          <Alert variant="destructive" className="py-3">
                             <AlertCircle className="h-4 w-4" />

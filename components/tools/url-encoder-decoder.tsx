@@ -23,7 +23,7 @@ export function URLEncoderDecoder() {
 
   const debouncedInput = useDebounce(input, DEBOUNCE_DELAY)
   const { copied, copyToClipboard } = useClipboard()
-  const { process } = useProcessing()
+  const { process } = useProcessing<string>()
 
   const processText = useCallback(
     async (text: string, operation: "encode" | "decode") => {

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import type { ComponentType } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { URLEncoderDecoder } from "@/components/tools/url-encoder-decoder"
 import { Base64EncoderDecoder } from "@/components/tools/base64-encoder-decoder"
@@ -11,8 +12,11 @@ import { UUIDGenerator } from "@/components/tools/uuid-generator"
 import { TextCaseConverter } from "@/components/tools/text-case-converter"
 import { WhitespaceCleaner } from "@/components/tools/whitespace-cleaner"
 import { QRCodeGenerator } from "@/components/tools/qr-code-generator"
-import { TOOL_CATEGORIES } from "@/lib/constants"
+import { JWTSecretKeyGenerator } from "@/components/tools/jwt-secret-key-generator"
+import { ALL_TOOLS, TOOL_CATEGORIES } from "@/lib/constants"
+import type { ToolId } from "@/lib/constants"
 import { Link, FileText, Hash, Code, Key, Fingerprint, Type, Eraser, QrCode } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 
 const TOOL_ICONS = {
   url: Link,
@@ -24,7 +28,8 @@ const TOOL_ICONS = {
   hash: Hash,
   uuid: Fingerprint,
   qr: QrCode,
-} as const
+  "jwt-secret": Key,
+} satisfies Record<ToolId, LucideIcon>
 
 const TOOL_COMPONENTS = {
   url: URLEncoderDecoder,
@@ -36,12 +41,13 @@ const TOOL_COMPONENTS = {
   hash: HashGenerator,
   uuid: UUIDGenerator,
   qr: QRCodeGenerator,
-} as const
+  "jwt-secret": JWTSecretKeyGenerator,
+} satisfies Record<ToolId, ComponentType>
 
 export function EncodingToolsApp() {
   const [activeTab, setActiveTab] = useState("url")
 
-  const allTools = TOOL_CATEGORIES.flatMap((category) => category.tools)
+  const allTools = ALL_TOOLS
   const activeToolInfo = allTools.find((tool) => tool.id === activeTab)
   const ActiveComponent = TOOL_COMPONENTS[activeTab as keyof typeof TOOL_COMPONENTS]
 

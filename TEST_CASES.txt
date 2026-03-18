@@ -38,11 +38,16 @@ Expected:
   Hello, World!
 
 
-3) JWT Encoder & Decoder
+3) JWT Encoder & Decoder (Deep QA)
 
-Test 3.1 - Decode Token
-Input Token:
+Golden Token:
   eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+Golden Secret:
+  your-256-bit-secret
+
+Test 3.1 - Decode valid token
+Input Token:
+  [Golden Token]
 Expected Header:
   {
     "alg": "HS256",
@@ -54,14 +59,26 @@ Expected Payload:
     "name": "John Doe",
     "iat": 1516239022
   }
+Expected Status:
+  No error message
 
-Test 3.2 - Verify Token (HS256)
+Test 3.2 - Verify valid signature
+Input Token:
+  [Golden Token]
 Secret:
-  your-256-bit-secret
+  [Golden Secret]
 Expected:
   Signature Verified
 
-Test 3.3 - Encode Token (HS256)
+Test 3.3 - Verify invalid signature
+Input Token:
+  [Golden Token]
+Secret:
+  wrong-secret
+Expected:
+  Invalid Signature
+
+Test 3.4 - Encode token (HS256)
 Header JSON:
   {
     "alg": "HS256",
@@ -74,9 +91,94 @@ Payload JSON:
     "iat": 1516239022
   }
 Secret:
-  your-256-bit-secret
-Expected Token:
-  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+  [Golden Secret]
+Expected:
+  Token is generated and starts with "eyJ"
+
+Test 3.5 - Encode token (HS384)
+Action:
+  Change Algorithm dropdown to HS384
+Expected:
+  Token is generated and non-empty
+
+Test 3.6 - Encode token (HS512)
+Action:
+  Change Algorithm dropdown to HS512
+Expected:
+  Token is generated and non-empty
+
+Test 3.7 - Invalid header JSON
+Header JSON:
+  { "alg": "HS256", "typ": "JWT"
+Expected:
+  Encoding Error is shown
+
+Test 3.8 - Invalid payload JSON
+Payload JSON:
+  { "sub": "123", }
+Expected:
+  Encoding Error is shown
+
+Test 3.9 - Unsupported algorithm in header
+Header JSON:
+  {
+    "alg": "RS256",
+    "typ": "JWT"
+  }
+Expected:
+  Algorithm not supported for symmetric signing
+
+Test 3.10 - Malformed token (2 segments)
+Input Token:
+  abc.def
+Expected:
+  Invalid JWT Format
+
+Test 3.11 - Malformed token (bad base64 payload)
+Input Token:
+  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid_payload.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+Expected:
+  Invalid JWT Format
+
+Test 3.12 - Empty input reset behavior
+Action:
+  Clear JWT input and secret
+Expected:
+  Header and payload outputs clear, verify status disappears
+
+Test 3.13 - In-tool Base64 secret generation
+Action:
+  In Encode tab, click Generate in "JWT Secret Key Generator (Base64)"
+Expected:
+  Generated secret appears
+  Secret is automatically copied into "Sign with Secret" input
+
+Test 3.14 - Copy generated secret
+Action:
+  Click Copy beside generated secret
+Expected:
+  Clipboard contains generated Base64 secret
+
+Test 3.15 - Copy encoded token
+Action:
+  Click Copy Token
+Expected:
+  Clipboard contains encoded token
+
+Test 3.16 - Load Sample Token button
+Action:
+  Click Load Sample Token in Decode tab
+Expected:
+  Token input and secret fields populate with sample values
+
+Test 3.17 - Large payload resilience
+Payload JSON:
+  {
+    "sub": "123",
+    "blob": "[repeat x 5000 chars]"
+  }
+Expected:
+  UI remains responsive, token still generated
 
 
 4) JSON Formatter

@@ -11,8 +11,9 @@ import { WhitespaceCleaner } from "@/components/tools/whitespace-cleaner"
 import { QRCodeGenerator } from "@/components/tools/qr-code-generator"
 import { JWTSecretKeyGenerator } from "@/components/tools/jwt-secret-key-generator"
 import Link from "next/link"
-import { TOOL_CATEGORIES } from "@/lib/constants"
-import type { Tool } from "@/lib/constants"
+import type { ComponentType } from "react"
+import { ALL_TOOLS } from "@/lib/constants"
+import type { ToolId } from "@/lib/constants"
 import { notFound } from "next/navigation"
 
 const TOOL_COMPONENTS = {
@@ -26,15 +27,14 @@ const TOOL_COMPONENTS = {
   uuid: UUIDGenerator,
   qr: QRCodeGenerator,
   "jwt-secret": JWTSecretKeyGenerator,
-} as const
+} satisfies Record<ToolId, ComponentType>
 
 export function ToolRenderer({ slug }: { slug: string }) {
-  const allTools = TOOL_CATEGORIES.flatMap((c) => c.tools) as Tool[]
-  const toolInfo = allTools.find((t) => t.id === slug)
+  const toolInfo = ALL_TOOLS.find((tool) => tool.id === slug)
 
   if (!toolInfo) return notFound()
 
-  const ActiveComponent = TOOL_COMPONENTS[slug as keyof typeof TOOL_COMPONENTS]
+  const ActiveComponent = TOOL_COMPONENTS[slug as ToolId]
 
   if (!ActiveComponent) return notFound()
 

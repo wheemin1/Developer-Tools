@@ -29,25 +29,6 @@ export function UUIDGenerator() {
     }
   }, [uuidFormat]);
 
-  // Get original UUID from formatted UUID
-  const getOriginalUUID = useCallback((formattedUuid: string): string => {
-    // Remove braces if present
-    let original = formattedUuid.replace(/^\{|\}$/g, "");
-    
-    // Ensure lowercase
-    original = original.toLowerCase();
-    
-    // Add hyphens if they're missing
-    if (!original.includes("-") && original.length === 32) {
-      original = original.replace(
-        /^(.{8})(.{4})(.{4})(.{4})(.{12})$/,
-        "$1-$2-$3-$4-$5"
-      );
-    }
-    
-    return original;
-  }, []);
-
   // Generate new UUID
   const generateUUID = useCallback(() => {
     try {
@@ -55,7 +36,7 @@ export function UUIDGenerator() {
       const formattedUuid = formatUUID(newRawUuid)
       setUuid(formattedUuid)
       setHistory((prev) => [formattedUuid, ...prev.slice(0, 9)]) // Keep last 10
-    } catch (error) {
+    } catch {
       // Fallback for browsers that don't support crypto.randomUUID()
       const fallbackUuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
         const r = (Math.random() * 16) | 0
@@ -68,84 +49,61 @@ export function UUIDGenerator() {
     }
   }, [formatUUID])
 
-  // Generate multiple UUIDs
-  const generateMultipleUUIDs = useCallback((count: number) => {
-    const uuids: string[] = [];
-    
-    for (let i = 0; i < count; i++) {
-      try {
-        const newRawUuid = crypto.randomUUID();
-        const formattedUuid = formatUUID(newRawUuid);
-        uuids.push(formattedUuid);
-      } catch (error) {
-        // Fallback
-        const fallbackUuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-          const r = (Math.random() * 16) | 0;
-          const v = c === "x" ? r : (r & 0x3) | 0x8;
-          return v.toString(16);
-        });
-        uuids.push(formatUUID(fallbackUuid));
-      }
-    }
-    
-    // Add all to history (limit to 10)
-    setHistory((prev) => [...uuids, ...prev].slice(0, 10));
-    
-    // Set the most recent one as current
-    if (uuids.length > 0) {
-      setUuid(uuids[0]);
-    }
-    
-    // If more than one, offer to copy all
-    if (uuids.length > 1) {
-      const allUuids = uuids.join('\n');
-      
-      // Create a button that copies all generated UUIDs
-      const copyAllButton = document.createElement('button');
-      copyAllButton.textContent = `Copy all ${uuids.length} UUIDs`;
-      copyAllButton.className = 'copy-all-button';
-      copyAllButton.onclick = async () => {
+  const generateMultipleUUIDs = useCallback(
+    (count: number) => {
+      const uuids: string[] = []
+
+      for (let i = 0; i < count; i++) {
         try {
-          await navigator.clipboard.writeText(allUuids);
-          toast({
-            title: "Copied!",
-            description: `${uuids.length} UUIDs copied to clipboard.`,
-          });
-        } catch (error) {
-          toast({
-            title: "Copy Failed",
-            description: "Failed to copy UUIDs to clipboard.",
-            variant: "destructive",
-          });
+          uuids.push(formatUUID(crypto.randomUUID()))
+        } catch {
+          const fallbackUuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (char) => {
+            const random = (Math.random() * 16) | 0
+            const value = char === "x" ? random : (random & 0x3) | 0x8
+            return value.toString(16)
+          })
+          uuids.push(formatUUID(fallbackUuid))
         }
-      };
-      
-      // Show toast with the button
+      }
+
+      setHistory((prev) => [...uuids, ...prev].slice(0, 10))
+      if (uuids.length > 0) {
+        setUuid(uuids[0])
+      }
+
+      if (uuids.length <= 1) return
+
+      const allUuids = uuids.join("\n")
       toast({
         title: `Generated ${uuids.length} UUIDs`,
         description: "You can copy individual UUIDs from history or copy all at once.",
         action: (
-          <Button size="sm" variant="default" onClick={async () => {
-            try {
-              await navigator.clipboard.writeText(allUuids);
-              toast({
-                title: "Copied!",
-                description: `${uuids.length} UUIDs copied to clipboard.`,
-              });
-            } catch (error) {
-              toast({
-                title: "Copy Failed",
-                description: "Failed to copy UUIDs to clipboard.",
-                variant: "destructive",
-              });
-            }
-          }}>
+          <Button
+            size="sm"
+            variant="default"
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(allUuids)
+                toast({
+                  title: "Copied!",
+                  description: `${uuids.length} UUIDs copied to clipboard.`,
+                })
+              } catch {
+                toast({
+                  title: "Copy Failed",
+                  description: "Failed to copy UUIDs to clipboard.",
+                  variant: "destructive",
+                })
+              }
+            }}
+          >
             Copy All
           </Button>
         ),
-      });
-    }
-  }, [formatUUID, toast]);
+      })
+    },
+    [formatUUID, toast],
+  )
 
   // Generate initial UUID on component mount
   useEffect(() => {
@@ -166,7 +124,7 @@ export function UUIDGenerator() {
         setTimeout(() => {
           setCopied(false)
         }, 2000)
-      } catch (error) {
+      } catch {
         toast({
           title: "Copy Failed",
           description: "Failed to copy UUID to clipboard.",
@@ -342,11 +300,7 @@ export function UUIDGenerator() {
         <div className="flex flex-wrap items-center gap-3">
           <Button
             variant="outline"
-            onClick={() => {
-              for (let i = 0; i < batchSize; i++) {
-                generateUUID()
-              }
-            }}
+            onClick={() => generateMultipleUUIDs(batchSize)}
             className="gap-2"
           >
             Generate {batchSize} UUIDs

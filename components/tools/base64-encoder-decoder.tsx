@@ -11,6 +11,25 @@ import { Copy, Check, Zap, Info, Upload } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useDebounce } from "@/hooks/use-debounce"
 
+function bytesToBase64(bytes: Uint8Array): string {
+  let binary = ""
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte)
+  })
+  return btoa(binary)
+}
+
+function base64ToBytes(base64: string): Uint8Array {
+  const binary = atob(base64)
+  const bytes = new Uint8Array(binary.length)
+
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index)
+  }
+
+  return bytes
+}
+
 export function Base64EncoderDecoder() {
   const [input, setInput] = useState("")
   const [output, setOutput] = useState("")
@@ -49,14 +68,17 @@ export function Base64EncoderDecoder() {
 
       try {
         if (operation === "encode") {
-          setOutput(btoa(unescape(encodeURIComponent(text))))
+          const encodedBytes = new TextEncoder().encode(text)
+          setOutput(bytesToBase64(encodedBytes))
         } else {
-          // Add validation for Base64 string before decoding
-          const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
+          // Add validation for Base64 string before decoding.
+          const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/
           if (!base64Regex.test(text) || text.length % 4 !== 0) {
-            throw new Error("Invalid Base64 string");
+            throw new Error("Invalid Base64 string")
           }
-          setOutput(decodeURIComponent(escape(atob(text))))
+
+          const decodedBytes = base64ToBytes(text)
+          setOutput(new TextDecoder().decode(decodedBytes))
         }
       } catch (error) {
         toast({
@@ -104,7 +126,7 @@ export function Base64EncoderDecoder() {
       setTimeout(() => {
         setCopied(false)
       }, 2000)
-    } catch (error) {
+    } catch {
       toast({
         title: "Copy Failed",
         description: "Failed to copy text to clipboard.",
@@ -123,14 +145,7 @@ export function Base64EncoderDecoder() {
       if (typeof result === "string") {
         setInput(result)
       } else if (result instanceof ArrayBuffer) {
-        // Improved ArrayBuffer to base64 conversion
-        const bytes = new Uint8Array(result)
-        let binary = '';
-        const len = bytes.byteLength;
-        for (let i = 0; i < len; i++) {
-          binary += String.fromCharCode(bytes[i]);
-        }
-        const base64 = btoa(binary);
+        const base64 = bytesToBase64(new Uint8Array(result))
         setInput(base64)
         setMode("decode")
       }
@@ -175,14 +190,7 @@ export function Base64EncoderDecoder() {
       if (typeof result === "string") {
         setInput(result)
       } else if (result instanceof ArrayBuffer) {
-        // Convert ArrayBuffer to base64
-        const bytes = new Uint8Array(result)
-        let binary = '';
-        const len = bytes.byteLength;
-        for (let i = 0; i < len; i++) {
-          binary += String.fromCharCode(bytes[i]);
-        }
-        const base64 = btoa(binary);
+        const base64 = bytesToBase64(new Uint8Array(result))
         setInput(base64)
         setMode("decode")
       }

@@ -53,29 +53,29 @@ export function JSONFormatter() {
       if (operation === "format") {
         // Sort keys if option is enabled
         if (beautifyOptions.sortKeys) {
-          const sortObjectKeys = (obj: any): any => {
+          const sortObjectKeys = (obj: unknown): unknown => {
             // If not an object or is null/array, return as is
-            if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
-              return obj;
+            if (typeof obj !== "object" || obj === null || Array.isArray(obj)) {
+              return obj
             }
-            
+
             // Create a new object with sorted keys
-            return Object.keys(obj)
+            return Object.keys(obj as Record<string, unknown>)
               .sort()
-              .reduce((result: any, key) => {
+              .reduce<Record<string, unknown>>((result, key) => {
                 // Recursively sort nested objects
-                result[key] = sortObjectKeys(obj[key]);
-                return result;
-              }, {});
-          };
-          
-          const sortedObj = sortObjectKeys(parsed);
-          setOutput(JSON.stringify(sortedObj, null, indentSize));
+                result[key] = sortObjectKeys((obj as Record<string, unknown>)[key])
+                return result
+              }, {})
+          }
+
+          const sortedObj = sortObjectKeys(parsed)
+          setOutput(JSON.stringify(sortedObj, null, indentSize))
         } else {
-          setOutput(JSON.stringify(parsed, null, indentSize));
+          setOutput(JSON.stringify(parsed, null, indentSize))
         }
       } else {
-        setOutput(JSON.stringify(parsed));
+        setOutput(JSON.stringify(parsed))
       }
     } catch (err) {
       setIsValid(false)
@@ -112,7 +112,7 @@ export function JSONFormatter() {
       setTimeout(() => {
         setCopied(false)
       }, 2000)
-    } catch (error) {
+    } catch {
       toast({
         title: "Copy Failed",
         description: "Failed to copy JSON to clipboard.",

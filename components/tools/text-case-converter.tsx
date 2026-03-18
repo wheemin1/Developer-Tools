@@ -163,7 +163,7 @@ export function TextCaseConverter() {
         setTimeout(() => {
           setCopied("")
         }, 2000)
-      } catch (error) {
+      } catch {
         toast({
           title: "Copy Failed",
           description: "Failed to copy text to clipboard.",

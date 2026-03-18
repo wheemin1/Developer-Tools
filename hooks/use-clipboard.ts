@@ -21,7 +21,7 @@ export function useClipboard() {
         setTimeout(() => {
           setCopied("")
         }, COPY_FEEDBACK_DURATION)
-      } catch (error) {
+      } catch {
         toast({
           title: "Copy Failed",
           description: "Failed to copy to clipboard.",
@@ -47,15 +47,15 @@ export function useClipboard() {
                 })
                 setTimeout(() => setCopied(""), COPY_FEEDBACK_DURATION)
                 resolve()
-              } catch (error) {
-                reject(error)
+              } catch (clipboardError) {
+                reject(clipboardError)
               }
             } else {
               reject(new Error("Failed to create blob"))
             }
           })
         })
-      } catch (error) {
+      } catch {
         toast({
           title: "Copy Failed",
           description: "Failed to copy image to clipboard.",

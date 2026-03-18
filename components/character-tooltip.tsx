@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 interface CharacterTooltipProps {
@@ -8,8 +7,6 @@ interface CharacterTooltipProps {
 }
 
 export function CharacterTooltip({ text }: CharacterTooltipProps) {
-  const [hoveredChar, setHoveredChar] = useState<string | null>(null)
-
   const commonEncodings = {
     "%20": "Space",
     "%21": "! (Exclamation mark)",
@@ -55,11 +52,7 @@ export function CharacterTooltip({ text }: CharacterTooltipProps) {
         return (
           <HoverCard key={index}>
             <HoverCardTrigger asChild>
-              <span
-                className="bg-primary/20 px-1 rounded cursor-help hover:bg-primary/30 transition-colors"
-                onMouseEnter={() => setHoveredChar(upperPart)}
-                onMouseLeave={() => setHoveredChar(null)}
-              >
+              <span className="bg-primary/20 px-1 rounded cursor-help hover:bg-primary/30 transition-colors">
                 {part}
               </span>
             </HoverCardTrigger>

@@ -78,6 +78,16 @@ export const TOOL_CATEGORIES = [
 
 export type ToolCategory = (typeof TOOL_CATEGORIES)[number]
 export type Tool = ToolCategory["tools"][number]
+export type ToolId = Tool["id"]
+
+const allTools: Tool[] = []
+for (const category of TOOL_CATEGORIES) {
+  for (const tool of category.tools) {
+    allTools.push(tool)
+  }
+}
+
+export const ALL_TOOLS: readonly Tool[] = allTools
 
 export const DEBOUNCE_DELAY = 300
 export const COPY_FEEDBACK_DURATION = 2000

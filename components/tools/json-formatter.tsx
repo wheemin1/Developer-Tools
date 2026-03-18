@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch"
 import { Copy, Check, Zap, AlertCircle, CheckCircle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useDebounce } from "@/hooks/use-debounce"
+import { trackEvent } from "@/lib/analytics"
 
 export function JSONFormatter() {
   const [input, setInput] = useState("")
@@ -104,6 +105,7 @@ export function JSONFormatter() {
     try {
       await navigator.clipboard.writeText(output)
       setCopied(true)
+      trackEvent("copy_success", { tool: "json" })
       toast({
         title: "Copied!",
         description: "JSON copied to clipboard.",
@@ -113,6 +115,7 @@ export function JSONFormatter() {
         setCopied(false)
       }, 2000)
     } catch {
+      trackEvent("copy_failure", { tool: "json" })
       toast({
         title: "Copy Failed",
         description: "Failed to copy JSON to clipboard.",
@@ -142,6 +145,7 @@ export function JSONFormatter() {
       isActive: true,
     }
     setInput(JSON.stringify(sample))
+    trackEvent("sample_load", { tool: "json" })
   }, [])
 
   const handleModeChange = useCallback(

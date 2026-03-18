@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { COPY_FEEDBACK_DURATION } from "@/lib/constants"
+import { trackEvent } from "@/lib/analytics"
 
 export function useClipboard() {
   const [copied, setCopied] = useState<string>("")
@@ -13,6 +14,7 @@ export function useClipboard() {
       try {
         await navigator.clipboard.writeText(text)
         setCopied(label)
+        trackEvent("copy_success", { label })
         toast({
           title: "Copied!",
           description: `${label} copied to clipboard.`,
@@ -22,6 +24,7 @@ export function useClipboard() {
           setCopied("")
         }, COPY_FEEDBACK_DURATION)
       } catch {
+        trackEvent("copy_failure", { label })
         toast({
           title: "Copy Failed",
           description: "Failed to copy to clipboard.",
@@ -41,6 +44,7 @@ export function useClipboard() {
               try {
                 await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })])
                 setCopied(label)
+                trackEvent("copy_success", { label, kind: "image" })
                 toast({
                   title: "Copied!",
                   description: `${label} copied to clipboard.`,
@@ -56,6 +60,7 @@ export function useClipboard() {
           })
         })
       } catch {
+        trackEvent("copy_failure", { label, kind: "image" })
         toast({
           title: "Copy Failed",
           description: "Failed to copy image to clipboard.",

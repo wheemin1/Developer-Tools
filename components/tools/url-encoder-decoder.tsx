@@ -41,6 +41,7 @@ export function URLEncoderDecoder() {
           }
         },
         {
+          eventName: `url_${operation}`,
           onSuccess: (result) => setOutput(result),
           onError: () => setOutput(""),
         },

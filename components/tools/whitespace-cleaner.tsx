@@ -9,6 +9,7 @@ import { Copy, Check, Zap, Eraser } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useDebounce } from "@/hooks/use-debounce"
 import { WhitespaceProcessor } from "@/lib/utils/text-processors"
+import { trackEvent } from "@/lib/analytics"
 
 interface CleaningOptions {
   trimOnly: boolean
@@ -60,6 +61,7 @@ export function WhitespaceCleaner() {
     try {
       await navigator.clipboard.writeText(output)
       setCopied(true)
+      trackEvent("copy_success", { tool: "whitespace" })
       toast({
         title: "Copied!",
         description: "Cleaned text copied to clipboard.",
@@ -69,6 +71,7 @@ export function WhitespaceCleaner() {
         setCopied(false)
       }, 2000)
     } catch {
+      trackEvent("copy_failure", { tool: "whitespace" })
       toast({
         title: "Copy Failed",
         description: "Failed to copy text to clipboard.",
@@ -90,6 +93,7 @@ export function WhitespaceCleaner() {
     	and	tabs	and	extra	spaces.   
     
     It needs cleaning!   `)
+    trackEvent("sample_load", { tool: "whitespace" })
   }, [])
 
   const handleOptionChange = useCallback((option: keyof CleaningOptions, checked: boolean) => {

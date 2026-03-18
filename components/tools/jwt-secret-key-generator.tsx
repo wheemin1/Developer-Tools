@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Copy, RefreshCw } from "lucide-react"
+import { trackEvent } from "@/lib/analytics"
 
 const SECRET_SIZES = [
   { label: "128-bit (16 bytes)", value: 16 },
@@ -31,6 +32,7 @@ export function JWTSecretKeyGenerator() {
     crypto.getRandomValues(bytes)
     setSecret(bytesToBase64(bytes))
     setCopyState("idle")
+    trackEvent("process_success", { eventName: "jwt_secret_generate" })
   }
 
   const copySecret = async () => {
@@ -38,9 +40,11 @@ export function JWTSecretKeyGenerator() {
     try {
       await navigator.clipboard.writeText(secret)
       setCopyState("success")
+      trackEvent("copy_success", { tool: "jwt-secret" })
       setTimeout(() => setCopyState("idle"), 2000)
     } catch {
       setCopyState("error")
+      trackEvent("copy_failure", { tool: "jwt-secret" })
     }
   }
 

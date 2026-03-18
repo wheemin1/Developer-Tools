@@ -19,10 +19,10 @@ const bodyFont = Manrope({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://developer-tools-suite.netlify.app'),
+  metadataBase: new URL('https://developertoolss.netlify.app'),
   title: 'Free Developer Tools Suite | URL Encoder, Base64, JWT Decoder & 9 Essential Online Tools',
-  description: 'Free online developer tools including URL encoder/decoder, Base64 encoder/decoder, JWT token decoder, JSON formatter, hash generator, UUID generator, QR code generator & more. No registration required - instant access to essential coding utilities.',
-  keywords: 'URL encoder, URL decoder, Base64 encoder, Base64 decoder, JWT decoder, JSON formatter, hash generator, MD5, SHA256, SHA1, UUID generator, QR code generator, text converter, case converter, whitespace cleaner, developer tools, online tools, encoding tools, decoding tools, web development tools, programming utilities, coding tools, free online tools, developer utilities, web developer tools',
+  description: 'Privacy-first online developer tools for URL, Base64, JWT, JSON, hash, UUID, QR, and text processing. 100% browser-side workflows with no registration and no prompt overhead.',
+  keywords: 'URL encoder, URL decoder, Base64 encoder, Base64 decoder, JWT encoder, JWT decoder, JSON formatter, hash generator, MD5, SHA256, SHA1, UUID generator, QR code generator, text converter, case converter, whitespace cleaner, developer tools, online tools, encoding tools, decoding tools, privacy first developer tools, client-side tools',
   authors: [{ name: 'Developer Tools Suite' }],
   creator: 'Developer Tools Suite',
   publisher: 'Developer Tools Suite',
@@ -30,9 +30,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://developer-tools-suite.netlify.app',
+    url: 'https://developertoolss.netlify.app',
     title: 'Free Developer Tools Suite | URL Encoder, Base64, JWT Decoder & Essential Online Tools',
-    description: 'Free online developer tools including URL encoder/decoder, Base64 encoder/decoder, JWT decoder, JSON formatter, hash generator, UUID generator, QR code generator & text utilities. No registration required - instant access to 9 essential coding tools.',
+    description: 'Privacy-first developer tools for JWT, Base64, URL, JSON, hashing, UUID, and QR workflows. Fast, deterministic, and fully browser-side.',
     siteName: 'Developer Tools Suite',
     images: [
       {
@@ -46,14 +46,14 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Free Developer Tools Suite | URL Encoder, Base64, JWT Decoder & Essential Online Tools',
-    description: 'Free online developer tools: URL encoder/decoder, Base64 encoder/decoder, JWT decoder, JSON formatter, hash generator, UUID generator, QR code generator & more. No signup required!',
+    description: 'Privacy-first developer tools: JWT, Base64, URL, JSON, hash, UUID, QR, and text utilities with instant browser-side processing.',
     images: ['/og-image.png'],
   },
   verification: {
     google: 'CXwW2ROvezFAamVFZYXX26sxDGQ9YjNOHBPFGM7LA6U',
   },
   alternates: {
-    canonical: 'https://developer-tools-suite.netlify.app',
+    canonical: 'https://developertoolss.netlify.app',
   },
   category: 'technology',
 }
@@ -82,8 +82,8 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebApplication",
               "name": "Developer Tools Suite",
-              "url": "https://developer-tools-suite.netlify.app",
-              "description": "Free online developer tools including URL encoder/decoder, Base64 encoder/decoder, JWT decoder, JSON formatter, hash generator, UUID generator, QR code generator, text case converter, and whitespace cleaner. Essential utilities for web developers and programmers.",
+              "url": "https://developertoolss.netlify.app",
+              "description": "Privacy-first online developer tools including URL encoder/decoder, Base64 encoder/decoder, JWT encode/decode workflows, JSON formatter, hash generator, UUID generator, QR code generator, text case converter, and whitespace cleaner.",
               "applicationCategory": "DeveloperApplication",
               "operatingSystem": "Any",
               "offers": {

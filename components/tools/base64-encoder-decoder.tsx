@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch"
 import { Copy, Check, Zap, Info, Upload } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useDebounce } from "@/hooks/use-debounce"
+import { trackEvent } from "@/lib/analytics"
 
 function bytesToBase64(bytes: Uint8Array): string {
   let binary = ""
@@ -118,6 +119,7 @@ export function Base64EncoderDecoder() {
     try {
       await navigator.clipboard.writeText(output)
       setCopied(true)
+      trackEvent("copy_success", { tool: "base64" })
       toast({
         title: "Copied!",
         description: "Text copied to clipboard.",
@@ -127,6 +129,7 @@ export function Base64EncoderDecoder() {
         setCopied(false)
       }, 2000)
     } catch {
+      trackEvent("copy_failure", { tool: "base64" })
       toast({
         title: "Copy Failed",
         description: "Failed to copy text to clipboard.",
@@ -149,6 +152,7 @@ export function Base64EncoderDecoder() {
         setInput(base64)
         setMode("decode")
       }
+      trackEvent("sample_load", { tool: "base64", source: "file_upload" })
     }
 
     if (file.type.startsWith("text/")) {
@@ -194,6 +198,7 @@ export function Base64EncoderDecoder() {
         setInput(base64)
         setMode("decode")
       }
+      trackEvent("sample_load", { tool: "base64", source: "file_drop" })
     }
 
     if (file.type.startsWith("text/")) {

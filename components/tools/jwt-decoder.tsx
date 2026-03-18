@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Copy, AlertCircle, ShieldCheck, ShieldAlert, Check } from "lucide-react"
+import { trackEvent } from "@/lib/analytics"
 
 export function JWTDecoder() {
   const [activeTab, setActiveTab] = useState("decode")
@@ -35,6 +36,11 @@ export function JWTDecoder() {
   const [generatedToken, setGeneratedToken] = useState("")
   const [encodeError, setEncodeError] = useState("")
     const [generatedSecret, setGeneratedSecret] = useState("")
+
+    const handleTabChange = (value: string) => {
+        setActiveTab(value)
+        trackEvent("tool_switch", { tool: "jwt", tab: value })
+    }
 
     const bytesToBase64 = (bytes: Uint8Array) => {
         let binary = ""
@@ -85,9 +91,11 @@ export function JWTDecoder() {
       await jwtVerify(token, secretKey)
             if (requestId !== verifyRequestIdRef.current) return
       setVerifyStatus("valid")
+    trackEvent("process_success", { eventName: "jwt_verify" })
         } catch {
             if (requestId !== verifyRequestIdRef.current) return
       setVerifyStatus("invalid")
+    trackEvent("process_failure", { eventName: "jwt_verify" })
     }
   }
 
@@ -116,10 +124,12 @@ export function JWTDecoder() {
                 if (requestId !== encodeRequestIdRef.current) return
                 setGeneratedToken(jwt)
                 setEncodeError("")
+                                trackEvent("process_success", { eventName: "jwt_encode" })
             } catch (err: unknown) {
                 if (requestId !== encodeRequestIdRef.current) return
                 const message = err instanceof Error ? err.message : "Unknown error"
                 setEncodeError("Invalid JSON or Encoding Error: " + message)
+                                trackEvent("process_failure", { eventName: "jwt_encode" })
         setGeneratedToken("")
       }
     }
@@ -146,6 +156,7 @@ export function JWTDecoder() {
         try {
             await navigator.clipboard.writeText(text)
             setCopyError("")
+            trackEvent("copy_success", { tool: "jwt", type })
 
             if (type === "token") {
                 setCopiedToken(true)
@@ -157,6 +168,7 @@ export function JWTDecoder() {
             setTimeout(() => setCopiedSecret(false), 2000)
         } catch {
             setCopyError("Clipboard access failed. Use a secure context (HTTPS) and allow permissions.")
+            trackEvent("copy_failure", { tool: "jwt", type })
         }
   }
 
@@ -167,6 +179,7 @@ export function JWTDecoder() {
         setGeneratedSecret(secret)
         setEncodeSecret(secret)
         setCopyError("")
+        trackEvent("process_success", { eventName: "jwt_secret_generate" })
     }
 
   const loadSampleToken = () => {
@@ -174,11 +187,12 @@ export function JWTDecoder() {
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
         setTokenInput(sample)
         setDecodeSecret("your-256-bit-secret")
+        trackEvent("sample_load", { tool: "jwt" })
   }
 
   return (
     <div className="w-full h-full max-w-none">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+    <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="mb-6 grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="decode">Decode JWT</TabsTrigger>
           <TabsTrigger value="encode">Encode / Generate</TabsTrigger>

@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { ERROR_CORRECTION_LEVELS, QR_SIZES } from "@/lib/constants"
 import { Download, RotateCcw } from "lucide-react"
+import { trackEvent } from "@/lib/analytics"
 
 export function QRCodeGenerator() {
 	const [text, setText] = useState("")
@@ -28,10 +29,12 @@ export function QRCodeGenerator() {
 		link.href = url
 		link.download = "qr-code.png"
 		link.click()
+		trackEvent("process_success", { eventName: "qr_download" })
 	}
 
 	const loadSample = () => {
 		setText("https://example.com/docs?ref=developer-tools")
+		trackEvent("sample_load", { tool: "qr" })
 	}
 
 	const handleClear = () => {

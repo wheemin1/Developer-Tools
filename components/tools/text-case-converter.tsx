@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch"
 import { Copy, Check, Zap, Type } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useDebounce } from "@/hooks/use-debounce"
+import { trackEvent } from "@/lib/analytics"
 
 interface CaseConversion {
   name: string
@@ -155,6 +156,7 @@ export function TextCaseConverter() {
       try {
         await navigator.clipboard.writeText(text)
         setCopied(caseName)
+        trackEvent("copy_success", { tool: "case", caseName })
         toast({
           title: "Copied!",
           description: `${caseName} text copied to clipboard.`,
@@ -164,6 +166,7 @@ export function TextCaseConverter() {
           setCopied("")
         }, 2000)
       } catch {
+        trackEvent("copy_failure", { tool: "case", caseName })
         toast({
           title: "Copy Failed",
           description: "Failed to copy text to clipboard.",
@@ -181,6 +184,7 @@ export function TextCaseConverter() {
 
   const loadSampleText = useCallback(() => {
     setInput("Hello World Example Text")
+    trackEvent("sample_load", { tool: "case" })
   }, [])
 
   return (

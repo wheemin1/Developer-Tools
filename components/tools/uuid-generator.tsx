@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Copy, Check, RefreshCw, Fingerprint } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { trackEvent } from "@/lib/analytics"
 
 export function UUIDGenerator() {
   const [uuid, setUuid] = useState("")
@@ -84,11 +85,13 @@ export function UUIDGenerator() {
             onClick={async () => {
               try {
                 await navigator.clipboard.writeText(allUuids)
+                trackEvent("copy_success", { tool: "uuid", type: "batch" })
                 toast({
                   title: "Copied!",
                   description: `${uuids.length} UUIDs copied to clipboard.`,
                 })
               } catch {
+                trackEvent("copy_failure", { tool: "uuid", type: "batch" })
                 toast({
                   title: "Copy Failed",
                   description: "Failed to copy UUIDs to clipboard.",
@@ -116,6 +119,7 @@ export function UUIDGenerator() {
       try {
         await navigator.clipboard.writeText(targetUuid)
         setCopied(true)
+        trackEvent("copy_success", { tool: "uuid", type: "single" })
         toast({
           title: "Copied!",
           description: "UUID copied to clipboard.",
@@ -125,6 +129,7 @@ export function UUIDGenerator() {
           setCopied(false)
         }, 2000)
       } catch {
+        trackEvent("copy_failure", { tool: "uuid", type: "single" })
         toast({
           title: "Copy Failed",
           description: "Failed to copy UUID to clipboard.",

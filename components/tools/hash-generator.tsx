@@ -9,6 +9,7 @@ import { Copy, Check, Zap, Upload } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useDebounce } from "@/hooks/use-debounce"
 import SparkMD5 from "spark-md5"
+import { trackEvent } from "@/lib/analytics"
 
 const ALGORITHMS = [
   { name: "MD5", id: "md5" },
@@ -129,6 +130,7 @@ export function HashGenerator() {
       try {
         await navigator.clipboard.writeText(hash)
         setCopiedHash(algorithm)
+        trackEvent("copy_success", { tool: "hash", algorithm })
         toast({
           title: "Copied!",
           description: `${algorithm.toUpperCase()} hash copied to clipboard.`,
@@ -138,6 +140,7 @@ export function HashGenerator() {
           setCopiedHash("")
         }, 2000)
       } catch {
+        trackEvent("copy_failure", { tool: "hash", algorithm })
         toast({
           title: "Copy Failed",
           description: "Failed to copy hash to clipboard.",
@@ -197,6 +200,7 @@ export function HashGenerator() {
     setInputSource("text")
     setFileInfo("")
     setInput("The quick brown fox jumps over the lazy dog")
+    trackEvent("sample_load", { tool: "hash" })
   }
 
   return (

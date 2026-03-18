@@ -1,6 +1,9 @@
+"use client"
+
 import Link from "next/link"
 import { TOOL_CATEGORIES } from "@/lib/constants"
 import { ArrowRight, FileText, Hash, Code, Key, Fingerprint, Type, Eraser, QrCode } from "lucide-react"
+import { trackEvent } from "@/lib/analytics"
 
 // To handle rendering specific icons mapped per ID
 const TOOL_ICONS: Record<string, React.ReactNode> = {
@@ -29,6 +32,7 @@ export function ToolsGrid() {
               <Link
                 key={tool.id}
                 href={`/tools/${tool.id}`}
+                onClick={() => trackEvent("tool_switch", { from: "directory", to: tool.id })}
                 className="group relative flex flex-col gap-5 rounded-2xl border border-border/70 bg-card/60 p-6 transition-all hover:border-foreground/30"
               >
                 <div className="flex items-start justify-between">

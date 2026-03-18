@@ -51,16 +51,16 @@ const TOOL_COMPONENTS = {
 } satisfies Record<ToolId, ComponentType>
 
 const TOOL_USE_CASES: Record<ToolId, string> = {
-  url: "Use this for redirect debugging, query normalization, and quickly testing encoded URL parameters.",
-  base64: "Useful for API payload checks, auth header inspection, and safe binary-to-text conversion during debugging.",
-  jwt: "Best for token debugging, local signature checks, and verifying claims without exposing secrets to third-party chat systems.",
-  json: "Use this when validating payload shape, pretty-printing logs, or minifying JSON for transport tests.",
-  case: "Handy for naming conversions across APIs, database fields, and frontend code conventions.",
-  whitespace: "Great for cleanup of copied logs, CSV fragments, and multiline text before processing.",
-  hash: "Generate deterministic fingerprints for integrity checks, fixtures, and quick content comparison.",
-  uuid: "Generate UUIDs for test fixtures, id placeholders, and reproducible local QA scenarios.",
-  qr: "Create scannable QR codes for links, auth bootstrapping, and quick mobile handoff flows.",
-  "jwt-secret": "Generate strong Base64 secrets for HS256/384/512 signing in local development and staging.",
+  url: "Quick URL encode/decode for redirect and query debugging.",
+  base64: "Fast Base64 checks for payloads, headers, and files.",
+  jwt: "Token decode/verify/sign flow without leaving the browser.",
+  json: "Validate and format payloads before shipping requests.",
+  case: "Convert naming styles for API and code conventions.",
+  whitespace: "Clean copied logs and multiline text in one pass.",
+  hash: "Generate stable digests for integrity checks.",
+  uuid: "Create IDs quickly for test and fixture workflows.",
+  qr: "Generate scan-ready QR codes for links and handoff.",
+  "jwt-secret": "Create strong Base64 secrets for HS signing.",
 }
 
 export function ToolRenderer({ slug }: { slug: string }) {
@@ -93,11 +93,8 @@ export function ToolRenderer({ slug }: { slug: string }) {
         <p className="text-muted-foreground mt-2">{toolInfo.description}</p>
       </div>
       {relatedLinks.length > 0 && (
-        <section className="rounded-xl border p-5 bg-card/40 space-y-3">
-          <h2 className="text-xl font-semibold">Suggested Workflow Links</h2>
-          <p className="text-sm text-muted-foreground">
-            Move through related tools in one flow to debug faster without switching context.
-          </p>
+        <section className="rounded-xl border p-4 bg-card/40 space-y-2">
+          <h2 className="text-base font-semibold">Related Workflow</h2>
           <div className="flex flex-wrap gap-2 text-sm">
             {relatedLinks.map((link) => (
               <Link key={link.href} href={link.href} className="rounded-full border px-3 py-1.5 hover:bg-muted">
@@ -108,33 +105,26 @@ export function ToolRenderer({ slug }: { slug: string }) {
         </section>
       )}
 
-      <section className="rounded-xl border p-5 bg-card/50">
-        <h2 className="text-xl font-semibold">Why Use This Tool Instead of AI Chat?</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          This workflow is optimized for immediate utility work: paste input, get deterministic output, and continue coding.
-          No prompt engineering, no conversation overhead, and no ambiguity in repeated transformations.
-        </p>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Privacy-first design keeps data processing in-browser, which matters when handling tokens, secrets, or internal payloads.
-        </p>
-        <p className="mt-3 text-sm">{TOOL_USE_CASES[slug as ToolId]}</p>
+      <section className="rounded-xl border p-4 bg-card/50 space-y-1.5">
+        <h2 className="text-base font-semibold">Quick Note</h2>
+        <p className="text-sm text-muted-foreground">{TOOL_USE_CASES[slug as ToolId]}</p>
+        <p className="text-xs text-muted-foreground">Local processing. No prompt loop.</p>
       </section>
 
       {failureCases.length > 0 && (
-        <section className="rounded-xl border p-5 space-y-3">
-          <h2 className="text-xl font-semibold">Failure Case Library</h2>
-          <p className="text-sm text-muted-foreground">
-            Common failure patterns and direct fixes for this tool&apos;s workflow.
-          </p>
-          <div className="space-y-3">
-            {failureCases.map((failureCase) => (
-              <article key={failureCase.issue} className="rounded-lg bg-muted/30 p-4">
-                <h3 className="text-base font-semibold">{failureCase.issue}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">Cause: {failureCase.reason}</p>
-                <p className="mt-1 text-sm">Fix: {failureCase.fix}</p>
-              </article>
-            ))}
-          </div>
+        <section className="rounded-xl border p-4">
+          <details>
+            <summary className="cursor-pointer text-sm font-semibold">Failure Cases (quick fixes)</summary>
+            <div className="mt-3 space-y-3">
+              {failureCases.map((failureCase) => (
+                <article key={failureCase.issue} className="rounded-lg bg-muted/30 p-3">
+                  <h3 className="text-sm font-semibold">{failureCase.issue}</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">Cause: {failureCase.reason}</p>
+                  <p className="mt-1 text-xs">Fix: {failureCase.fix}</p>
+                </article>
+              ))}
+            </div>
+          </details>
         </section>
       )}
 
